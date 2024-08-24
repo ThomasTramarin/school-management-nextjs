@@ -4,9 +4,10 @@ import InputField from "@/components/form/InputField";
 import SubmitButton from "@/components/SubmitButton";
 import { registerAdminAction } from "../action";
 import { useState } from "react";
-import { ImSpinner8 } from "react-icons/im";
+import { useRouter } from "next/navigation";
 
 export default function RegisterAdminForm() {
+  const router = useRouter();
   const [pending, setPending] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,6 +19,7 @@ export default function RegisterAdminForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
 
     if (!confirmPassword || !password || !email) {
       setMessageState({
@@ -38,7 +40,7 @@ export default function RegisterAdminForm() {
     if (confirmPassword !== password) {
       setMessageState({
         successMessage: "",
-        errorMessage: "Password is incorrect",
+        errorMessage: "Password do not match",
       });
       return;
     }
@@ -52,6 +54,8 @@ export default function RegisterAdminForm() {
         setEmail("");
         setPassword("");
         setConfirmPassword("");
+
+        router.push("/login");
       }
     } catch (err) {
       setMessageState({
@@ -86,13 +90,7 @@ export default function RegisterAdminForm() {
         value={confirmPassword}
         onChange={(e) => setConfirmPassword(e.target.value)}
       />
-      <button
-        type="submit"
-        className="bg-button-bg hover:bg-button-bg-hover text-white w-full p-2 rounded-lg transition-colors duration-150 flex gap-5 justify-center items-center"
-      >
-        Register Admin{" "}
-        {pending && <ImSpinner8 size={28} className="animate-spin" />}
-      </button>
+      <SubmitButton pending={pending}>Register as Admin</SubmitButton>
       {messageState.errorMessage ? (
         <div className="text-error-text mt-1" aria-live="polite">{messageState.errorMessage}</div>
       ) : (

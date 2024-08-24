@@ -2,7 +2,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 import { NextAuthOptions, User } from "next-auth";
 import { db } from "@/db";
-import { adminsTable } from "@/db/schema";
+import { usersTable } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 interface CustomUser extends User {
@@ -24,13 +24,11 @@ export const authOptions: NextAuthOptions = {
           placeholder: "example@email.com",
         },
         password: { label: "Password", type: "password" },
-        userCode: { label: "User Code", type: "text" },
       },
       async authorize(credentials, req): Promise<CustomUser | null> {
-        const { email, password, userCode } = credentials as {
+        const { email, password } = credentials as {
           email: string;
           password: string;
-          userCode: string;
         };
 
         if (!credentials) {
@@ -38,32 +36,23 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
-          if (userCode && password && !email) {
-            //Login as user
+          const users = await db
+            .select()
+            .from(usersTable)
+            .where(eq(usersTable.email, email));
+
+          if (!users || users.length === 0) {
+            return null;
+          }
+
+          const user = users[0];
+
+          const passwordMatch = await bcrypt.compare(password, user.password);
+
+          if (!passwordMatch) {
             return null;
           } else {
-            //Login as admin
-            const admins = await db
-              .select()
-              .from(adminsTable)
-              .where(eq(adminsTable.email, email));
-
-            if (!admins || admins.length === 0) {
-              return null;
-            }
-
-            const admin = admins[0];
-
-            const passwordMatch = await bcrypt.compare(
-              password,
-              admin.password
-            );
-
-            if (!passwordMatch) {
-              return null;
-            } else {
-              return { id: admin.id, role: "admin" };
-            }
+            return { id: user.id, role: user.role };
           }
         } catch (err: any) {
           console.error(err);
@@ -74,7 +63,7 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user }: { token: any; user?: any }) {
-      // Add user id to the token
+
       if (user) {
         token.id = user.id;
         token.role = user.role;
@@ -82,7 +71,7 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }: { session: any; token: any }) {
-      // Add the user id to the session
+
       return {
         ...session,
         user: {
