@@ -12,6 +12,21 @@
   }
 }
 
+@layer components {
+  .main-container {
+    @apply flex h-[calc(100vh-64px)] flex-1 flex-col px-5 pb-10 pt-5 max-md:pb-32 sm:px-10;
+  }
+
+  .bottombar {
+    @apply fixed bottom-0 z-10 w-full px-4 h-16 md:hidden bg-secondary-bg rounded-t-[40px];
+  }
+
+  .sidebar {
+    @apply sticky left-0 top-0 z-20 flex h-[calc(100vh-64px)] w-60 shadow-xl flex-col bg-secondary-bg overflow-auto p-5 max-md:hidden border-r-2 border-[#022456];
+  }
+}
+
+
 .input-shadow:focus {
   box-shadow: -4px 4px 4px 0 rgba(31, 78, 121, 0.5);
 }

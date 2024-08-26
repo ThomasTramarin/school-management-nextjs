@@ -16,6 +16,7 @@ const config: Config = {
         "error-text": "#8B0000",
         "success-text": "#005B09",
         "primary-bg": "#E4EEFD",
+        "secondary-bg": "#579aff",
         "button-bg": "#2874A6",
         "button-bg-hover": "#1F4E79",
         "focus-bg": "#C9DEFF",

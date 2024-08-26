@@ -1,7 +1,7 @@
 "use client";
 
 import InputField from "@/components/form/InputField";
-import SubmitButton from "@/components/SubmitButton";
+import SubmitButton from "@/components/form/SubmitButton";
 import { registerAdminAction } from "../action";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
